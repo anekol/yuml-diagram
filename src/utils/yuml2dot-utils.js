@@ -127,19 +127,16 @@ module.exports = function()
     // {:ac} - actor
     // {:ag} - aggregate
     // {:co} - command
-    // {:es} - external system
     // {:de} - domain event
     // {:pm} - process manager
     // {:po} - policy
     // {:rm} - read model
+    // {:sy} - system
     this.parse_event_storm = function (part, allowNote)
     {
         var c, es;
         // :ac is allowed only for a note
-        if (allowNote && part.startsWith("note:"))
-            es = /^(.*)\{ *(:ac) *\}$/.exec(part);
-        else
-            es = /^(.*)\{ *(:ag|:co|:es|:de|:pm|:po|:rm) *\}$/.exec(part);
+        es = /^(.*)\{ *(:ac|:ag|:co|:de|:pm|:po|:rm|:sy) *\}$/.exec(part);
         if (es != null && es.length == 3) {
             switch (es[2].trim().toLowerCase()) {
                 case ":ac":
@@ -151,9 +148,7 @@ module.exports = function()
                 case ":co":
                     c = "#37a9fa"
                     break;
-                case ":es":
-                    c = "#fcd7ed"
-                    break;
+
                 case ":de":
                     c = "#fa8c01"
                     break;
@@ -165,6 +160,9 @@ module.exports = function()
                     break;
                 case ":rm":
                     c = "#b5e401"
+                    break;
+                case ":sy":
+                    c = "#fcd7ed"
                     break;
                 default:
                     c = ""
