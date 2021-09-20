@@ -95,10 +95,10 @@ module.exports = function()
 
     this.extractBgAndNote = function(part, allowNote)
     {
-        var ret = { bg: "", isNote: false, luma: 128 };
+        var ret = { bg: "", isNote: false, luma: 128, estype: "" };
 
-        // parse any event storming colours
-        part = parse_event_storm(part, allowNote)
+        // parse any event storming types
+        [part, ret.estype] = parse_event_storming(part)
 
         var bgParts = /^(.*)\{ *bg *: *([a-zA-Z]+\d*|#[0-9a-fA-F]{6}) *\}$/.exec(part);
         if (bgParts != null && bgParts.length == 3)
@@ -123,55 +123,70 @@ module.exports = function()
         return ret;
     }
 
-    // set eventstorming colours
+    // Parse Eventstorming objects
+    //
+    // [Actor {:ac}]
+    // [Aggregate {:ag}]
+    // [Process Manager {:pm}]
+    // [Policy {:po}]
+    // [Read Model {:rm}]
+    // [External System{:sy}]
+    this.parse_event_storming = function (part)
+    {
+        var c, es, estype;
+        es = /^(.*)\{ *(:ac|:ag|:pm|:po|:rm|:sy) *\}$/.exec(part);
+        if (es != null && es.length == 3)
+        {
+            estype = es[2].trim().toLowerCase()
+            c = event_storming_color(es[2])
+            return [es[1] + " {bg: " + c + "}", estype];
+        } 
+        else
+            return [part, ""]
+    }
+
+    // Map Eventstorming colours
+    //
     // {:ac} - actor
     // {:ag} - aggregate
     // {:co} - command
-    // {:es} - external system
     // {:de} - domain event
     // {:pm} - process manager
     // {:po} - policy
     // {:rm} - read model
-    this.parse_event_storm = function (part, allowNote)
+    // {:sy} - system
+    this.map_event_storming_color = function (type)
     {
-        var c, es;
-        // :ac is allowed only for a note
-        if (allowNote && part.startsWith("note:"))
-            es = /^(.*)\{ *(:ac) *\}$/.exec(part);
-        else
-            es = /^(.*)\{ *(:ag|:co|:es|:de|:pm|:po|:rm) *\}$/.exec(part);
-        if (es != null && es.length == 3) {
-            switch (es[2].trim().toLowerCase()) {
-                case ":ac":
-                    c = "#fbf72a"
-                    break;
-                case ":ag":
-                    c = "#fcef89"
-                    break;
-                case ":co":
-                    c = "#37a9fa"
-                    break;
-                case ":es":
-                    c = "#fcd7ed"
-                    break;
-                case ":de":
-                    c = "#fa8c01"
-                    break;
-                case ":pm":
-                    c = "#be89c7"
-                    break;
-                case ":po":
-                    c = "#e9bfff"
-                    break;
-                case ":rm":
-                    c = "#b5e401"
-                    break;
-                default:
-                    c = ""
-            }
-            return es[1] + " {bg: " + c + "}";
-        } else 
-            return part
+        switch (type.trim().toLowerCase())
+        {
+            case ":ac":
+                c = "#fbf72a"
+                break;
+            case ":ag":
+                c = "#fcef89"
+                break;
+            case ":co":
+                c = "#37a9fa"
+                break;
+            case ":de":
+                c = "#fa8c01"
+                break;
+            case ":pm":
+                c = "#be89c7"
+                break;
+            case ":po":
+                c = "#e9bfff"
+                break;
+            case ":rm":
+                c = "#b5e401"
+                break;
+            case ":sy":
+                c = "#fcd7ed"
+                break;
+            default:
+                c = ""
+        }
+        return c
     }
 
     this.escape_token_escapes = function(spec)
