@@ -215,7 +215,10 @@ module.exports = function(actors, signals, uids, isDark)
         var y = offsetY + SIGNAL_MARGIN + 2*SIGNAL_PADDING;
 
         // Draw the text in the middle of the signal
-        this.draw_text(x, y, signal.message, true);
+        if (signal.hasOwnProperty("fontcolor"))
+          this.draw_text(x, y, signal.message, true, signal.fontcolor);
+        else
+          this.draw_text(x, y, signal.message, true);
 
         // Draw the line along the bottom of the signal
         y = offsetY + signal.height - SIGNAL_MARGIN - SIGNAL_PADDING;

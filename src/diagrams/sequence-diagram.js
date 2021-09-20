@@ -38,7 +38,7 @@ module.exports = function(specLines, options)
             {
                 part = part.substr(1, part.length-2);
                 var ret = extractBgAndNote(part, true);
-                exprs.push([ret.isNote ? "note" : "object", ret.part, ret.bg, ret.fontcolor]);
+                exprs.push([ret.isNote ? "note" : "object", ret.part, ret.bg, ret.fontcolor, ret.estype]);
             }
             else if  (part == "-")
             {
@@ -105,7 +105,8 @@ module.exports = function(specLines, options)
                         continue;
 
                     label = formatLabel(label, 20, true);
-                    var actor = { type: elem[k][0], name: rn, label: label, index: actors.length };
+                    var estype = elem[k][4]
+                    var actor = { type: elem[k][0], name: rn, label: label, index: actors.length, estype: estype};
                     uids[rn] = actor;
                     if (elem[k][2])  // background color
                         actor.bgcolor = elem[k][2];
@@ -123,16 +124,22 @@ module.exports = function(specLines, options)
                 var actorB = uids[recordName(elem[2][1])];
                 var signal = null;
 
+                // signal font colour for event storming
+                var fontcolor = event_signal_color(actorA, actorB)
+
                 switch (style)
                 {
                     case "dashed":
-                        signal = { type: "signal", actorA: actorA, actorB: actorB, linetype: "dashed", arrowtype: "arrow-filled", message: message }
+                        signal = { type: "signal", actorA: actorA, actorB: actorB, linetype: "dashed",
+                         arrowtype: "arrow-filled", message: message, fontcolor: fontcolor }
                         break;
                     case "solid":
-                        signal = { type: "signal", actorA: actorA, actorB: actorB, linetype: "solid", arrowtype: "arrow-filled", message: message }
+                        signal = { type: "signal", actorA: actorA, actorB: actorB, linetype: "solid",
+                         arrowtype: "arrow-filled", message: message, fontcolor: fontcolor }
                         break;
                     case "async":
-                        signal = { type: "signal", actorA: actorA, actorB: actorB, linetype: "solid", arrowtype: "arrow-open", message: message }
+                        signal = { type: "signal", actorA: actorA, actorB: actorB, linetype: "solid",
+                         arrowtype: "arrow-open", message: message, fontcolor: fontcolor }
                         break;
                 }
 
@@ -159,6 +166,30 @@ module.exports = function(specLines, options)
         var svg = r.svg_.serialize();
 
         return svg;
+    }
+
+    // Map eventstorming type to signal text color
+    //
+    // |     | :ac | :ag | :pm | :po | :rm | :sy |
+    // | --- | --- | --- | --- | --- | --- | --- |
+    // | :ac |     | :co |     |     |     |     |
+    // | :ag |     |     | :de |     | :de | :de |
+    // | :pm |     | :co |     |     |     |     |
+    // | :sy |     | :co |     |     |     |     |
+    //
+    function event_signal_color(actorA, actorB)
+    {
+        var esa = actorA.estype
+        var esb = actorB.estype
+        var c
+
+        if (esa == ":ag" && (esb == ":pm" || esb == ":rm" || esb == ":sy"))
+            c = ":de"
+        else if (esb == ":ag" && (esa == ":ac" || esa == ":pm" || esa == ":sy"))
+            c = ":co"
+        else
+            c = ""
+        return map_event_storming_color(c)
     }
 
     return composeSVG(specLines, options);
