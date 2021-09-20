@@ -107,7 +107,10 @@ module.exports = function(specLines, options)
                     label = formatLabel(label, 20, true);
                     var actor = { type: elem[k][0], name: rn, label: label, index: actors.length };
                     uids[rn] = actor;
-
+                    if (elem[k][2])  // background color
+                        actor.bgcolor = elem[k][2];
+                    if (elem[k][3])  // font color
+                        actor.fontcolor = elem[k][3];
                     actors.push(actor);
                 }
             }
