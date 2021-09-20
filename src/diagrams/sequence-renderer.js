@@ -280,7 +280,7 @@ module.exports = function(actors, signals, uids, isDark)
         // Draw inner box
         var rect = this.svg_.createRect(x, y, w, h);
         if (box.hasOwnProperty("bgcolor"))
-          rect.setAttribute("style", rect.getAttribute("style").replace("fill: none", "fill: " + box.bgcolor));
+          rect = rect.replace("fill: none", "fill: " + box.bgcolor);
 
         //rect.classList.add(Renderer.RECT_CLASS_);
         this.svg_.appendChild(rect);
