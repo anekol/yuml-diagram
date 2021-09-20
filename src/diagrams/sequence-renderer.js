@@ -279,6 +279,8 @@ module.exports = function(actors, signals, uids, isDark)
 
         // Draw inner box
         var rect = this.svg_.createRect(x, y, w, h);
+        if (box.hasOwnProperty("bgcolor"))
+          rect.setAttribute("style", rect.getAttribute("style").replace("fill: none", "fill: " + box.bgcolor));
 
         //rect.classList.add(Renderer.RECT_CLASS_);
         this.svg_.appendChild(rect);
@@ -286,8 +288,10 @@ module.exports = function(actors, signals, uids, isDark)
         // Draw text (in the center)
         x = getCenterX(box);
         y = getCenterY(box);
-
-        this.draw_text(x, y, text, true);
+        if (box.hasOwnProperty("fontcolor"))
+          this.draw_text(x, y, text, true, box.fontcolor);
+        else
+          this.draw_text(x, y, text, true);
     };
 
     function getCenterX(box) 

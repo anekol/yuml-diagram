@@ -97,6 +97,9 @@ module.exports = function()
     {
         var ret = { bg: "", isNote: false, luma: 128 };
 
+        // parse any event storming colours
+        part = parse_event_storm(part, allowNote)
+
         var bgParts = /^(.*)\{ *bg *: *([a-zA-Z]+\d*|#[0-9a-fA-F]{6}) *\}$/.exec(part);
         if (bgParts != null && bgParts.length == 3)
         {
@@ -118,6 +121,57 @@ module.exports = function()
             ret.isNote = true;
         }
         return ret;
+    }
+
+    // set eventstorming colours
+    // {:ac} - actor
+    // {:ag} - aggregate
+    // {:co} - command
+    // {:es} - external system
+    // {:de} - domain event
+    // {:pm} - process manager
+    // {:po} - policy
+    // {:rm} - read model
+    this.parse_event_storm = function (part, allowNote)
+    {
+        var c, es;
+        // :ac is allowed only for a note
+        if (allowNote && part.startsWith("note:"))
+            es = /^(.*)\{ *(:ac) *\}$/.exec(part);
+        else
+            es = /^(.*)\{ *(:ag|:co|:es|:de|:pm|:po|:rm) *\}$/.exec(part);
+        if (es != null && es.length == 3) {
+            switch (es[2].trim().toLowerCase()) {
+                case ":ac":
+                    c = "#fbf72a"
+                    break;
+                case ":ag":
+                    c = "#fcef89"
+                    break;
+                case ":co":
+                    c = "#37a9fa"
+                    break;
+                case ":es":
+                    c = "#fcd7ed"
+                    break;
+                case ":de":
+                    c = "#fa8c01"
+                    break;
+                case ":pm":
+                    c = "#be89c7"
+                    break;
+                case ":po":
+                    c = "#e9bfff"
+                    break;
+                case ":rm":
+                    c = "#b5e401"
+                    break;
+                default:
+                    c = ""
+            }
+            return es[1] + " {bg: " + c + "}";
+        } else 
+            return part
     }
 
     this.escape_token_escapes = function(spec)
