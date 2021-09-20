@@ -1,9 +1,8 @@
 const getRGB = require('./rgb.js');
 
-module.exports = function()
-{
+module.exports = function () {
     var colorTable = null;
-    const ESCAPED_CHARS = 
+    const ESCAPED_CHARS =
     {
         "\n": "<BR/>",
         "&": "&amp;",
@@ -11,15 +10,13 @@ module.exports = function()
         ">": "&gt;",
     };
 
-    this.escape_label = function(label)
-    {
+    this.escape_label = function (label) {
         var newlabel = "";
 
-        for (var i=0; i<label.length; i++)
+        for (var i = 0; i < label.length; i++)
             newlabel += replaceChar(label.charAt(i));
 
-        function replaceChar(c)
-        {
+        function replaceChar(c) {
             c = c.replace('{', '\\{').replace('}', '\\}');
             c = c.replace(';', '\n');
             c = c.replace('<', '\\<').replace('>', '\\>');
@@ -30,38 +27,32 @@ module.exports = function()
         return newlabel;
     }
 
-    this.unescape_label = function(label)
-    {
+    this.unescape_label = function (label) {
         var newlabel = label.replace(/\\\{/g, '{').replace(/\\\}/g, '}');
         newlabel = newlabel.replace(/\\</g, '<').replace(/\\>/g, '>');
 
         return newlabel;
     }
 
-    this.splitYumlExpr = function(line, separators, escape = "\\")
-    {
+    this.splitYumlExpr = function (line, separators, escape = "\\") {
         var word = "";
         var lastChar = null;
         var parts = [];
 
-        for (var i=0; i<line.length; i++)
-        {
+        for (var i = 0; i < line.length; i++) {
             c = line[i];
 
-            if (c === escape && i + 1 < line.length)
-            {
+            if (c === escape && i + 1 < line.length) {
                 word += c;
                 word += line[++i];
             }
-            else if (separators.indexOf(c) >= 0 && lastChar === null)
-            {
+            else if (separators.indexOf(c) >= 0 && lastChar === null) {
                 if (word.length > 0) {
                     parts.push(word.trim());
                     word = "";
                 }
 
-                switch (c)
-                {
+                switch (c) {
                     case '[':
                         lastChar = ']'; break;
                     case '(':
@@ -75,14 +66,12 @@ module.exports = function()
                 }
                 word = c;
             }
-            else if (c === lastChar)
-            {
-                lastChar =  null;
+            else if (c === lastChar) {
+                lastChar = null;
                 parts.push(word.trim() + c);
                 word = "";
             }
-            else
-            {
+            else {
                 word += c;
             }
         }
@@ -93,16 +82,14 @@ module.exports = function()
         return parts;
     }
 
-    this.extractBgAndNote = function(part, allowNote)
-    {
+    this.extractBgAndNote = function (part, allowNote) {
         var ret = { bg: "", isNote: false, luma: 128, estype: "" };
 
         // parse any event storming types
         [part, ret.estype] = parse_event_storming(part)
 
         var bgParts = /^(.*)\{ *bg *: *([a-zA-Z]+\d*|#[0-9a-fA-F]{6}) *\}$/.exec(part);
-        if (bgParts != null && bgParts.length == 3)
-        {
+        if (bgParts != null && bgParts.length == 3) {
             ret.part = bgParts[1].trim();
             ret.bg = bgParts[2].trim().toLowerCase();
 
@@ -115,8 +102,7 @@ module.exports = function()
         else
             ret.part = part.trim();
 
-        if (allowNote && part.startsWith("note:"))
-        {
+        if (allowNote && part.startsWith("note:")) {
             ret.part = ret.part.substring(5).trim();
             ret.isNote = true;
         }
@@ -131,16 +117,14 @@ module.exports = function()
     // [Policy {:po}]
     // [Read Model {:rm}]
     // [External System{:sy}]
-    this.parse_event_storming = function (part)
-    {
+    this.parse_event_storming = function (part) {
         var c, es, estype;
         es = /^(.*)\{ *(:ac|:ag|:pm|:po|:rm|:sy) *\}$/.exec(part);
-        if (es != null && es.length == 3)
-        {
+        if (es != null && es.length == 3) {
             estype = es[2].trim().toLowerCase()
             c = event_storming_color(es[2])
             return [es[1] + " {bg: " + c + "}", estype];
-        } 
+        }
         else
             return [part, ""]
     }
@@ -155,57 +139,58 @@ module.exports = function()
     // {:po} - policy
     // {:rm} - read model
     // {:sy} - system
-    this.map_event_storming_color = function (type)
-    {
-        switch (type.trim().toLowerCase())
-        {
-            case ":ac":
-                c = "#fbf72a"
-                break;
-            case ":ag":
-                c = "#fcef89"
-                break;
-            case ":co":
-                c = "#37a9fa"
-                break;
-            case ":de":
-                c = "#fa8c01"
-                break;
-            case ":pm":
-                c = "#be89c7"
-                break;
-            case ":po":
-                c = "#e9bfff"
-                break;
-            case ":rm":
-                c = "#b5e401"
-                break;
-            case ":sy":
-                c = "#fcd7ed"
-                break;
-            default:
-                c = ""
-        }
-        return c
+    this.parse_event_storm = function (part, allowNote) {
+        var c, es;
+        // :ac is allowed only for a note
+        es = /^(.*)\{ *(:ac|:ag|:co|:de|:pm|:po|:rm|:sy) *\}$/.exec(part);
+        if (es != null && es.length == 3) {
+            switch (es[2].trim().toLowerCase()) {
+                case ":ac":
+                    c = "#fbf72a"
+                    break;
+                case ":ag":
+                    c = "#fcef89"
+                    break;
+                case ":co":
+                    c = "#37a9fa"
+                    break;
+
+                case ":de":
+                    c = "#fa8c01"
+                    break;
+                case ":pm":
+                    c = "#be89c7"
+                    break;
+                case ":po":
+                    c = "#e9bfff"
+                    break;
+                case ":rm":
+                    c = "#b5e401"
+                    break;
+                case ":sy":
+                    c = "#fcd7ed"
+                    break;
+                default:
+                    c = ""
+            }
+            return es[1] + " {bg: " + c + "}";
+        } else
+            return part
     }
 
-    this.escape_token_escapes = function(spec)
-    {
+    this.escape_token_escapes = function (spec) {
         return spec.replace('\\[', '\\u005b').replace('\\]', '\\u005d');
     }
 
-    this.unescape_token_escapes = function(spec)
-    {
+    this.unescape_token_escapes = function (spec) {
         return spec.replace('\\u005b', '[').replace('\\u005d', ']');
     }
 
-    this.recordName = function(label)
-    {
+    this.recordName = function (label) {
         return label.split("|")[0].trim();
     }
 
-    this.formatLabel = function(label, wrap, allowDivisors)
-    {
+    this.formatLabel = function (label, wrap, allowDivisors) {
         label = label.trim();
 
         var lines = [label];
@@ -213,14 +198,11 @@ module.exports = function()
         if (allowDivisors && label.indexOf("|") >= 0)
             lines = label.split('|');
 
-        for (var j=0; j<lines.length; j++)
-        {
-            if (j==0 || !allowDivisors)
-            {
+        for (var j = 0; j < lines.length; j++) {
+            if (j == 0 || !allowDivisors) {
                 lines[j] = wordwrap(lines[j], wrap, "\n");
             }
-            else
-            {
+            else {
                 if (!lines[j].endsWith(";"))
                     lines[j] += ";";
 
@@ -233,35 +215,30 @@ module.exports = function()
         return escape_label(label);
     }
 
-    this.wordwrap = function(str, width, newline)
-    {
-        if (!str || str.length<width)
+    this.wordwrap = function (str, width, newline) {
+        if (!str || str.length < width)
             return str;
 
         var p;
-        for (p = width; p>0 && str[p]!=' '; p--) { }
+        for (p = width; p > 0 && str[p] != ' '; p--) { }
 
-        if (p > 0) 
-        {
+        if (p > 0) {
             var left = str.substring(0, p);
-            var right = str.substring(p+1);
+            var right = str.substring(p + 1);
             return left + newline + this.wordwrap(right, width, newline);
         }
 
         return str;
     }
 
-    this.serializeDot = function(obj, rankdir)
-    {
-          return "[" + Object.keys(obj).map(key => `${key}=` + ("string" === typeof obj[key] ? `"${obj[key]}"` : obj[key])).join(" , ") + " ]";
+    this.serializeDot = function (obj, rankdir) {
+        return "[" + Object.keys(obj).map(key => `${key}=` + ("string" === typeof obj[key] ? `"${obj[key]}"` : obj[key])).join(" , ") + " ]";
     }
 
-    this.serializeDotElements = function(arr)
-    {
+    this.serializeDotElements = function (arr) {
         var dot = "";
 
-        for (var i=0; i<arr.length; i++)
-        {
+        for (var i = 0; i < arr.length; i++) {
             var record = arr[i];
 
             if (record.length == 2)
@@ -273,11 +250,10 @@ module.exports = function()
         return dot;
     }
 
-    this.buildDotHeader = function(isDark)
-    {
+    this.buildDotHeader = function (isDark) {
         var colors = isDark ? "color=white, fontcolor=white" : "color=black, fontcolor=black";
 
-        var header = "digraph G {\r\n" 
+        var header = "digraph G {\r\n"
             + "  graph [ bgcolor=transparent, fontname=Helvetica ]\r\n"
             + "  node [ shape=none, margin=0, " + colors + ", fontname=Helvetica ]\r\n"
             + "  edge [ " + colors + ", fontname=Helvetica ]\r\n";
@@ -285,8 +261,7 @@ module.exports = function()
         return header;
     }
 
-    loadColors = function()
-    {
+    loadColors = function () {
         if (colorTable != null)
             return;
         else
@@ -294,25 +269,22 @@ module.exports = function()
 
         var rgb = getRGB();
 
-        for (var i=0; i<rgb.length; i++)
-        {
+        for (var i = 0; i < rgb.length; i++) {
             var parts = /^(\d+) (\d+) (\d+) (.*)$/.exec(rgb[i]);
 
-            if (parts != null && parts.length == 5 && parts[4].indexOf(' ') < 0)
-            {
+            if (parts != null && parts.length == 5 && parts[4].indexOf(' ') < 0) {
                 var luma = 0.2126 * parseFloat(parts[0]) + 0.7152 * parseFloat(parts[1]) + 0.0722 * parseFloat(parts[2]);
-                colorTable[parts[4].toLowerCase()] = luma;                
+                colorTable[parts[4].toLowerCase()] = luma;
             }
         }
     }
 
-    getLuma = function(color)
-    {
+    getLuma = function (color) {
         loadColors();
         var luma = 128;
 
         if (color.startsWith('#'))
-            luma = 0.2126 * parseInt(color.substr(1,2), 16) + 0.7152 * parseInt(color.substr(3,2), 16) + 0.0722 * parseInt(color.substr(5,2), 16);
+            luma = 0.2126 * parseInt(color.substr(1, 2), 16) + 0.7152 * parseInt(color.substr(3, 2), 16) + 0.0722 * parseInt(color.substr(5, 2), 16);
         else if (colorTable.hasOwnProperty(color))
             luma = colorTable[color];
 
