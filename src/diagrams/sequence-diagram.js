@@ -130,16 +130,16 @@ module.exports = function(specLines, options)
                 switch (style)
                 {
                     case "dashed":
-                        signal = { type: "signal", actorA: actorA, actorB: actorB, linetype: "dashed",
-                         arrowtype: "arrow-filled", message: message, fontcolor: fontcolor }
+                        signal = {type: "signal", actorA: actorA, actorB: actorB,
+                            linetype: "dashed", arrowtype: "arrow-filled", message: message, fontcolor: fontcolor}
                         break;
                     case "solid":
-                        signal = { type: "signal", actorA: actorA, actorB: actorB, linetype: "solid",
-                         arrowtype: "arrow-filled", message: message, fontcolor: fontcolor }
+                        signal = {type: "signal", actorA: actorA, actorB: actorB,
+                            linetype: "solid", arrowtype: "arrow-filled", message: message, fontcolor: fontcolor}
                         break;
                     case "async":
-                        signal = { type: "signal", actorA: actorA, actorB: actorB, linetype: "solid",
-                         arrowtype: "arrow-open", message: message, fontcolor: fontcolor }
+                        signal = {type: "signal", actorA: actorA, actorB: actorB,
+                            linetype: "solid", arrowtype: "arrow-open", message: message, fontcolor: fontcolor}
                         break;
                 }
 
