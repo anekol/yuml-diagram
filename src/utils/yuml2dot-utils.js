@@ -122,7 +122,7 @@ module.exports = function () {
         es = /^(.*)\{ *(:ac|:ag|:pm|:po|:rm|:sy) *\}$/.exec(part);
         if (es != null && es.length == 3) {
             estype = es[2].trim().toLowerCase()
-            c = event_storming_color(es[2])
+            c = map_event_storming_color(es[2])
             return [es[1] + " {bg: " + c + "}", estype];
         }
         else
