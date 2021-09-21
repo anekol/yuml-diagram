@@ -80,3 +80,30 @@ Have a nice diagram to show? Please send it for publishing here!
 * This package embeds a Javascript port of [Dot/Graphviz](http://www.graphviz.org/) called [viz.js](https://github.com/mdaines/viz.js)
 * The yuml-to-dot translator is loosely based on a Python project called [scruffy](https://github.com/aivarsk/scruffy)
 * The new sequence diagram is based on [this github fork](https://github.com/sharvil/node-sequence-diagram)
+
+## Event Storming and CQRS support for Sequence diagrams
+Enhancement for Sequence diagram to support [Event Storming](https://www.eventstorming.com) and [CQRS](https://10consulting.com/presentations/alchemy-conf-2021/) processes.
+```html
+// {type:sequence}
+
+// [Aggregate {:ag}]
+// [Command {:co}]
+// [External System {:es}]
+// [Domain Event {:de}]
+// [Process Manager {:pm}]
+// [Policy {:po}]
+// [Read Model{:rm}]
+
+[Auction Scheduler{:sy}]End Auction->[Auction{:ag}] 
+[Auction]Auction Ended>[Auction Summary{:rm}]
+[Auction]Auction Won>[Auction Summary]
+[Auction]Auction Won>[Auction Winner Notifier{:sy}]
+[Auction]Auction Ended>[Item Selling Process{:pm}]
+[Item Selling Process]Mark as Sold>[Item{:ag}]
+[Item Selling Process]Mark as UnSold>[Item]
+[Item]Item Sold>[Item Summary{:rm}]
+[Item]Item UnSold>[Item Summary]
+[Item]Item Sold>[Sold Item Notifier{:sy}]
+[Item]Item UnSold>[UnSold Item Notifier{:sy}]
+```
+![Example Auction](auction.png)
