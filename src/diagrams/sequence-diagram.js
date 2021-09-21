@@ -169,23 +169,18 @@ module.exports = function(specLines, options)
     }
 
     // Map eventstorming type to signal text color
-    //
-    // |     | :ac | :ag | :pm | :po | :rm | :sy |
-    // | --- | --- | --- | --- | --- | --- | --- |
-    // | :ac |     | :co |     |     |     |     |
-    // | :ag |     |     | :de |     | :de | :de |
-    // | :pm |     | :co |     |     |     |     |
-    // | :sy |     | :co |     |     |     |     |
-    //
+    // Any signal arriving at an Aggregate is a Command
+    // Any signal leaving an Aggregate is a Domain Event
+
     function event_signal_color(actorA, actorB)
     {
         var esa = actorA.estype
         var esb = actorB.estype
         var c
 
-        if (esa == ":ag" && (esb == ":pm" || esb == ":rm" || esb == ":sy"))
+        if (esa == ":ag")
             c = ":de"
-        else if (esb == ":ag" && (esa == ":ac" || esa == ":pm" || esa == ":sy"))
+        else if (esb == ":ag")
             c = ":co"
         else
             c = ""
