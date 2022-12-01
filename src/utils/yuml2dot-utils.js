@@ -122,7 +122,7 @@ module.exports = function () {
         es = /^(.*)\{ *(:ac|:ag|:pm|:po|:rm|:sy) *\}$/.exec(part);
         if (es != null && es.length == 3) {
             estype = es[2].trim().toLowerCase()
-            c = map_event_storming_color(es[2])
+            c = map_event_storming_color(estype)
             return [es[1] + " {bg: " + c + "}", estype];
         }
         else
@@ -139,43 +139,36 @@ module.exports = function () {
     // {:po} - policy
     // {:rm} - read model
     // {:sy} - system
-    this.parse_event_storm = function (part, allowNote) {
-        var c, es;
-        // :ac is allowed only for a note
-        es = /^(.*)\{ *(:ac|:ag|:co|:de|:pm|:po|:rm|:sy) *\}$/.exec(part);
-        if (es != null && es.length == 3) {
-            switch (es[2].trim().toLowerCase()) {
-                case ":ac":
-                    c = "#fbf72a"
-                    break;
-                case ":ag":
-                    c = "#fcef89"
-                    break;
-                case ":co":
-                    c = "#37a9fa"
-                    break;
-
-                case ":de":
-                    c = "#fa8c01"
-                    break;
-                case ":pm":
-                    c = "#be89c7"
-                    break;
-                case ":po":
-                    c = "#e9bfff"
-                    break;
-                case ":rm":
-                    c = "#b5e401"
-                    break;
-                case ":sy":
-                    c = "#fcd7ed"
-                    break;
-                default:
-                    c = ""
-            }
-            return es[1] + " {bg: " + c + "}";
-        } else
-            return part
+    this.map_event_storming_color = function (type) {
+        switch (type.trim().toLowerCase()) {
+            case ":ac":
+                c = "#fbf72a"
+                break;
+            case ":ag":
+                c = "#fcef89"
+                break;
+            case ":co":
+                c = "#37a9fa"
+                break;
+            case ":de":
+                c = "#fa8c01"
+                break;
+            case ":pm":
+                c = "#be89c7"
+                break;
+            case ":po":
+                c = "#e9bfff"
+                break;
+            case ":rm":
+                c = "#b5e401"
+                break;
+            case ":sy":
+                c = "#fcd7ed"
+                break;
+            default:
+                c = ""
+        }
+        return c
     }
 
     this.escape_token_escapes = function (spec) {
