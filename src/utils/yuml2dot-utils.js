@@ -142,10 +142,10 @@ module.exports = function () {
     this.map_event_storming_color = function (type) {
         switch (type.trim().toLowerCase()) {
             case ":ac":
-                c = "#fbf72a"
+                c = "#fcef89"
                 break;
             case ":ag":
-                c = "#fcef89"
+                c = "#fbf72a"
                 break;
             case ":co":
                 c = "#37a9fa"
