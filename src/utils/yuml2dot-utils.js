@@ -123,7 +123,7 @@ module.exports = function () {
         if (es != null && es.length == 3) {
             estype = es[2].trim().toLowerCase()
             c = map_event_storming_color(estype)
-            return [es[1] + " {bg: " + c + "}", estype];
+            return [es[1] + "~" + estype + "~" + "{ bg: " + c + " }", estype];
         }
         else
             return [part, ""]
