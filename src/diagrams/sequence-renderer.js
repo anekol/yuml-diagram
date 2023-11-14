@@ -263,8 +263,8 @@ module.exports = function (actors, signals, uids, isDark) {
     var h = box.height - 2 * margin;
 
     // Remove event stoming id
-    // var txt = /^(.*)\<(:ac|:ag|:pm|:po|:rm|:sy)\>}$/.exec(text);
-    var text_parts = /^(.*)~(:ac|:ag|:pm|:po|:rm|:sy)~$/.exec(text);
+    // var txt = /^(.*)\<(:ac|:ag|:pr|:po|:vi|:es)\>}$/.exec(text);
+    var text_parts = /^(.*)~(:ac|:ag|:pr|:po|:vi|:es)~$/.exec(text);
     var txt = text_parts == null ? text : text_parts[1]
 
     // Draw inner box

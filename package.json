@@ -27,8 +27,8 @@
   "main": "./index.js",
   "runkitExampleFilename": "./test/npm_test.js",
   "devDependencies": {
-    "browserify": "^16.2.3",
-    "uglifyify": "^5.0.1"
+    "browserify": "^17.0.0",
+    "uglifyify": "^5.0.0"
   },
   "scripts": {
     "browserify": "browserify index.js --standalone yuml_diagram  -g uglifyify -o ./dist/yuml-diagram.min.js"

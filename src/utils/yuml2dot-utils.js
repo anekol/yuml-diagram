@@ -113,13 +113,13 @@ module.exports = function () {
     //
     // [Actor {:ac}]
     // [Aggregate {:ag}]
-    // [Process Manager {:pm}]
+    // [Process{:pr}]
     // [Policy {:po}]
-    // [Read Model {:rm}]
+    // [View {:vi}]
     // [External System{:sy}]
     this.parse_event_storming = function (part) {
         var c, es, estype;
-        es = /^(.*)\{ *(:ac|:ag|:pm|:po|:rm|:sy) *\}$/.exec(part);
+        es = /^(.*)\{ *(:ac|:ag|:pr|:po|:vi|:es) *\}$/.exec(part);
         if (es != null && es.length == 3) {
             estype = es[2].trim().toLowerCase()
             c = map_event_storming_color(estype)
@@ -135,10 +135,10 @@ module.exports = function () {
     // {:ag} - aggregate
     // {:co} - command
     // {:de} - domain event
-    // {:pm} - process manager
+    // {:pr} - process
     // {:po} - policy
-    // {:rm} - read model
-    // {:sy} - system
+    // {:vi} - view
+    // {:es} - external system
     this.map_event_storming_color = function (type) {
         switch (type.trim().toLowerCase()) {
             case ":ac":
@@ -153,16 +153,16 @@ module.exports = function () {
             case ":de":
                 c = "#fa8c01"
                 break;
-            case ":pm":
+            case ":pr":
                 c = "#be89c7"
                 break;
             case ":po":
                 c = "#e9bfff"
                 break;
-            case ":rm":
+            case ":vi":
                 c = "#b5e401"
                 break;
-            case ":sy":
+            case ":es":
                 c = "#fcd7ed"
                 break;
             default:
