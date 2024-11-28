@@ -18,30 +18,26 @@ Close activation at source      [Source])message>[Dest]
 Cancel activation box           [Source])X
 */
 
-module.exports = function(specLines, options)
-{
-    var actors  = [];
+module.exports = function (specLines, options) {
+    var actors = [];
     var signals = [];
 
-    function parseYumlExpr(specLine)
-    {
+    function parseYumlExpr(specLine) {
         var exprs = [];
         var parts = this.splitYumlExpr(specLine, "[");
 
-        for (var i=0; i<parts.length; i++)
-        {
+        for (var i = 0; i < parts.length; i++) {
             var part = parts[i].trim();
             if (part.length == 0)
                 continue;
 
             if (part.match(/^\[.*\]$/)) // object
             {
-                part = part.substr(1, part.length-2);
+                part = part.substr(1, part.length - 2);
                 var ret = extractBgAndNote(part, true);
                 exprs.push([ret.isNote ? "note" : "object", ret.part, ret.bg, ret.fontcolor, ret.estype]);
             }
-            else if  (part == "-")
-            {
+            else if (part == "-") {
                 exprs.push(["signal", "", "", "dashed", ""]);  // note connector
             }
             else if (part.indexOf(">") >= 0)  // message
@@ -50,27 +46,23 @@ module.exports = function(specLines, options)
                 style = (part.indexOf(">>") >= 0) ? "async" : style;
 
                 var prefix = "";
-                if (part.startsWith("(") || part.startsWith(")"))
-                {
+                if (part.startsWith("(") || part.startsWith(")")) {
                     prefix = part.substr(0, 1);
                     part = part.substr(1);
                 }
 
                 var message = "";
                 var pos = part.match(/[\.|>]{0,1}>[\(|\)]{0,1}$/);
-                if (pos == null)
-                {
-                    throw("Invalid expression");
+                if (pos == null) {
+                    throw ("Invalid expression");
                 }
-                else if (pos.index > 0)
-                {
+                else if (pos.index > 0) {
                     message = part.substr(0, pos.index);
                     part = part.substr(pos.index);
                 }
 
                 var suffix = "";
-                if (part.endsWith("(") || part.endsWith(")"))
-                {
+                if (part.endsWith("(") || part.endsWith(")")) {
                     suffix = part.charAt(part.length - 1);
                     part = part.substr(0, part.length - 1);
                 }
@@ -78,27 +70,23 @@ module.exports = function(specLines, options)
                 exprs.push(["signal", prefix, message, style, suffix]);
             }
             else
-                throw("Invalid expression");
+                throw ("Invalid expression");
         }
 
         return exprs;
     }
 
-    function composeSVG(specLines, options)
-    {
+    function composeSVG(specLines, options) {
         var uids = {};
         var index = 0;
-        
-        for (var i=0; i<specLines.length; i++)
-        {
+
+        for (var i = 0; i < specLines.length; i++) {
             var elem = parseYumlExpr(specLines[i]);
 
-            for (var k=0; k<elem.length; k++)
-            {
+            for (var k = 0; k < elem.length; k++) {
                 var type = elem[k][0];
 
-                if (type == "object" )
-                {
+                if (type == "object") {
                     var label = elem[k][1];
                     var rn = recordName(label);
                     if (uids.hasOwnProperty(rn))
@@ -106,7 +94,7 @@ module.exports = function(specLines, options)
 
                     label = formatLabel(label, 20, true);
                     var estype = elem[k][4]
-                    var actor = { type: elem[k][0], name: rn, label: label, index: actors.length, estype: estype};
+                    var actor = { type: elem[k][0], name: rn, label: label, index: actors.length, estype: estype };
                     uids[rn] = actor;
                     if (elem[k][2])  // background color
                         actor.bgcolor = elem[k][2];
@@ -116,8 +104,7 @@ module.exports = function(specLines, options)
                 }
             }
 
-            if (elem.length == 3 && elem[0][0] == 'object' && elem[1][0] == 'signal' && elem[2][0] == 'object')
-            {
+            if (elem.length == 3 && elem[0][0] == 'object' && elem[1][0] == 'signal' && elem[2][0] == 'object') {
                 var message = elem[1][2];
                 var style = elem[1][3];
                 var actorA = uids[recordName(elem[0][1])];
@@ -127,27 +114,31 @@ module.exports = function(specLines, options)
                 // signal font colour for event storming
                 var fontcolor = event_signal_color(actorA, actorB)
 
-                switch (style)
-                {
+                switch (style) {
                     case "dashed":
-                        signal = {type: "signal", actorA: actorA, actorB: actorB,
-                            linetype: "dashed", arrowtype: "arrow-filled", message: message, fontcolor: fontcolor}
+                        signal = {
+                            type: "signal", actorA: actorA, actorB: actorB,
+                            linetype: "dashed", arrowtype: "arrow-filled", message: message, fontcolor: fontcolor
+                        }
                         break;
                     case "solid":
-                        signal = {type: "signal", actorA: actorA, actorB: actorB,
-                            linetype: "solid", arrowtype: "arrow-filled", message: message, fontcolor: fontcolor}
+                        signal = {
+                            type: "signal", actorA: actorA, actorB: actorB,
+                            linetype: "solid", arrowtype: "arrow-filled", message: message, fontcolor: fontcolor
+                        }
                         break;
                     case "async":
-                        signal = {type: "signal", actorA: actorA, actorB: actorB,
-                            linetype: "solid", arrowtype: "arrow-open", message: message, fontcolor: fontcolor}
+                        signal = {
+                            type: "signal", actorA: actorA, actorB: actorB,
+                            linetype: "solid", arrowtype: "arrow-open", message: message, fontcolor: fontcolor
+                        }
                         break;
                 }
 
                 if (signal != null)
                     signals.push(signal);
             }
-            else if (elem.length == 3 && elem[0][0] == 'object' && elem[1][0] == 'signal' && elem[2][0] == 'note')
-            {
+            else if (elem.length == 3 && elem[0][0] == 'object' && elem[1][0] == 'signal' && elem[2][0] == 'note') {
                 var actorA = uids[recordName(elem[0][1])];
                 var label = elem[2][1];
                 label = formatLabel(label, 20, true);
@@ -159,7 +150,7 @@ module.exports = function(specLines, options)
                     note.fontcolor = elem[2][3];
 
                 signals.push(note);
-            }            
+            }
         }
 
         var r = new renderer(actors, signals, uids, options.dark);
@@ -172,14 +163,13 @@ module.exports = function(specLines, options)
     // Any signal arriving at an Aggregate is a Command
     // Any signal leaving an Aggregate is a Domain Event
 
-    function event_signal_color(actorA, actorB)
-    {
+    function event_signal_color(actorA, actorB) {
         var esa = actorA.estype
         var esb = actorB.estype
         var c
 
         if (esa == ":ag")
-            c = ":de"
+            c = ":ev"
         else if (esb == ":ag")
             c = ":co"
         else

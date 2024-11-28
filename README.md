@@ -86,24 +86,37 @@ Adds support to Sequence diagram for [Event Storming](https://www.eventstorming.
 ```html
 // {type:sequence}
 
+// [Actor {:ac}]
 // [Aggregate {:ag}]
 // [Command {:co}]
+// [Event {:ev}]
+// [EventHandler {:eh}]
 // [External System {:es}]
-// [Domain Event {:de}]
-// [Process Manager {:pm}]
 // [Policy {:po}]
-// [Read Model{:rm}]
+// [Read Model{rm}]
 
-[Auction Scheduler{:sy}]End Auction->[Auction{:ag}] 
+// Map Eventstorming colours
+//
+// {:ac} - actor
+// {:ag} - aggregate
+// {:co} - command
+// {:ev} - event
+// {:eh} - event handler
+// {:es} - external system
+// {:po} - policy
+// {:rm} - view
+
+
+[Auction Scheduler{:es}]End Auction->[Auction{:ag}] 
 [Auction]Auction Ended>[Auction Summary{:rm}]
 [Auction]Auction Won>[Auction Summary]
-[Auction]Auction Won>[Auction Winner Notifier{:sy}]
-[Auction]Auction Ended>[Item Selling Process{:pm}]
+[Auction]Auction Won>[Auction Winner Notifier{:es}]
+[Auction]Auction Ended>[Item Selling Process{:eh}]
 [Item Selling Process]Mark as Sold>[Item{:ag}]
 [Item Selling Process]Mark as UnSold>[Item]
 [Item]Item Sold>[Item Summary{:rm}]
 [Item]Item UnSold>[Item Summary]
-[Item]Item Sold>[Sold Item Notifier{:sy}]
-[Item]Item UnSold>[UnSold Item Notifier{:sy}]
+[Item]Item Sold>[Sold Item Notifier{:es}]
+[Item]Item UnSold>[UnSold Item Notifier{:es}]
 ```
 ![Example Auction](auction.png)
